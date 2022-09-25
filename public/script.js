@@ -22,32 +22,38 @@ video.addEventListener('play', () => {
     const displaySize = { width: video.width, height: video.height };
     faceapi.matchDimensions(canvas, displaySize);
     setInterval(async () => {
-        const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
-        const landmarks = await faceapi.detectFaceLandmarks(video);
-        const landmarkPositions = landmarks.positions;
+        // const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
 
-        const mouth = landmarks.getMouth();
+        const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions();
+        const resizedDetections = faceapi.resizeResults(detections, displaySize);
 
-        // console.log(mouth[10])
+        // const detectionsWithLandmarks = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
+        // console.log(detectionsWithLandmarks[0].landmarks.positions)
 
         // Call this function to extract and display face
         if (detections[0] !== undefined) {
-            extractFaceFromBox(video, detections[0].box)
+            // extractFaceFromBox(video, detections[0].detection.box)
         } else {
             console.log('인식된 얼굴이 없습니다.');
         }
 
-        // if (mouth[0] !== undefined) {
-        //     extractFaceFromBox(video, mouth[0])
-        //     console.log(mouth)
-        // } else {
-        //     console.log('인식된 얼굴이 없습니다.');
-        // }
-
-        const resizedDetections = faceapi.resizeResults(detections, displaySize)
 
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
-        faceapi.draw.drawDetections(canvas, resizedDetections)
+        faceapi.draw.drawDetections(canvas, resizedDetections);
+        faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
+        faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
+
+        let happiness;
+
+        resizedDetections.forEach(result => {
+            const { expressions } = result
+            happiness = expressions.happy;
+        })
+
+        if (happiness > 0.1) {
+            console.log('웃다');
+        }
+
     }, 100)
 })
 
