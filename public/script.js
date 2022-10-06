@@ -16,52 +16,88 @@ function startVideo() {
 }
 
 
+
+const outputImage = document.getElementById('outputImage');
+const imgFilter = document.querySelector('.imgFilter');
+const fullmoon = document.querySelector('.fullmoon');
+let id = null;
+let pos = 0;
+
 video.addEventListener('play', () => {
     const canvas = faceapi.createCanvasFromMedia(video);
     document.body.append(canvas);
     const displaySize = { width: video.width, height: video.height };
     faceapi.matchDimensions(canvas, displaySize);
     setInterval(async () => {
-        // const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
 
-        const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions();
-        const resizedDetections = faceapi.resizeResults(detections, displaySize);
+        // 얼굴 따기
+        const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions();
+        // const resizedDetection = faceapi.resizeResults(detection, displaySize);
 
-        // const detectionsWithLandmarks = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
-        // console.log(detectionsWithLandmarks[0].landmarks.positions)
+        let happiness = 0;
 
-        // Call this function to extract and display face
-        if (detections[0] !== undefined) {
-            // extractFaceFromBox(video, detections[0].detection.box)
+
+        // 인식되면(값이 있으면) extractFaceFromBox 함수 실행
+        if (detection !== undefined) {
+            extractFaceFromBox(video, detection.detection.box);
+            happiness = detection.expressions.happy;
+
         } else {
             console.log('인식된 얼굴이 없습니다.');
         }
 
-
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
-        faceapi.draw.drawDetections(canvas, resizedDetections);
-        faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
-        faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
+        // 얼굴에 박스 그리기
+        // faceapi.draw.drawDetections(canvas, resizedDetections);
+        // 랜드마크 그리기
+        // faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
+        // faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
 
-        let happiness;
 
-        resizedDetections.forEach(result => {
-            const { expressions } = result
-            happiness = expressions.happy;
-        })
-
+        // 웃으면 올라오도록, 
         if (happiness > 0.1) {
+            // 웃으면 콘솔에 "웃다"라고 찍힌다
             console.log('웃다');
+            if (pos < 150) pos += 5;
+        }
+        // 안웃으면 내려가도록
+        else {
+            if (pos > 0) pos -= 2;
         }
 
+        imgFilter.style.bottom = pos + "px";
+        outputImage.style.bottom = pos + "px";
+        imgFilter.style.width = 100 + pos * 3 + "px";
+        imgFilter.style.height = 100 + pos * 3 + "px";
+        outputImage.style.width = 100 + pos * 3 + "px";
+        outputImage.style.height = 100 + pos * 3 + "px";
     }, 100)
 })
 
 
 
-let outputImage = document.getElementById('outputImage');
+function smile() {
+    clearInterval(id);
+    id = setInterval(move, 3);
 
-// This function extract a face from video frame with giving bounding box and display result into outputimage
+    function move() {
+        if (pos == 150) {
+            clearInterval(id);
+        } else {
+            pos++;
+            imgFilter.style.bottom = pos + "px";
+            outputImage.style.bottom = pos + "px";
+            imgFilter.style.width = 100 + pos * 3 + "px";
+            imgFilter.style.height = 100 + pos * 3 + "px";
+            outputImage.style.width = 100 + pos * 3 + "px";
+            outputImage.style.height = 100 + pos * 3 + "px";
+        }
+    }
+}
+
+
+
+// 얼굴인식해서 달 속에 집어넣어주는 함수
 async function extractFaceFromBox(inputImage, box) {
     const regionsToExtract = [
         new faceapi.Rect(box.x, box.y, box.width, box.height)
