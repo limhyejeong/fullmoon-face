@@ -58,7 +58,7 @@ video.addEventListener('play', () => {
         if (happiness > 0.1) {
             // 웃으면 콘솔에 "웃다"라고 찍힌다
             console.log('웃다');
-            if (pos < 150) pos += 7;
+            if (pos < 160) pos += 8;
         }
         // 안웃으면 내려가도록
         else {
@@ -67,10 +67,10 @@ video.addEventListener('play', () => {
 
         imgFilter.style.bottom = pos + "px";
         outputImage.style.bottom = pos + "px";
-        imgFilter.style.width = 100 + pos * 3 + "px";
-        imgFilter.style.height = 100 + pos * 3 + "px";
-        outputImage.style.width = 100 + pos * 3 + "px";
-        outputImage.style.height = 100 + pos * 3 + "px";
+        imgFilter.style.width = 150 + pos * 3 + "px";
+        imgFilter.style.height = 150 + pos * 3 + "px";
+        outputImage.style.width = 150 + pos * 3 + "px";
+        outputImage.style.height = 150 + pos * 3 + "px";
     }, 100)
 })
 
