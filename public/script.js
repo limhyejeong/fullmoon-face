@@ -58,7 +58,7 @@ video.addEventListener('play', () => {
         if (happiness > 0.1) {
             // 웃으면 콘솔에 "웃다"라고 찍힌다
             console.log('웃다');
-            if (pos < 150) pos += 5;
+            if (pos < 150) pos += 7;
         }
         // 안웃으면 내려가도록
         else {
@@ -73,28 +73,6 @@ video.addEventListener('play', () => {
         outputImage.style.height = 100 + pos * 3 + "px";
     }, 100)
 })
-
-
-
-function smile() {
-    clearInterval(id);
-    id = setInterval(move, 3);
-
-    function move() {
-        if (pos == 150) {
-            clearInterval(id);
-        } else {
-            pos++;
-            imgFilter.style.bottom = pos + "px";
-            outputImage.style.bottom = pos + "px";
-            imgFilter.style.width = 100 + pos * 3 + "px";
-            imgFilter.style.height = 100 + pos * 3 + "px";
-            outputImage.style.width = 100 + pos * 3 + "px";
-            outputImage.style.height = 100 + pos * 3 + "px";
-        }
-    }
-}
-
 
 
 // 얼굴인식해서 달 속에 집어넣어주는 함수
