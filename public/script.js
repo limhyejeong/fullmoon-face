@@ -58,7 +58,7 @@ video.addEventListener('play', () => {
         if (happiness > 0.1) {
             // 웃으면 콘솔에 "웃다"라고 찍힌다
             console.log('웃다');
-            if (pos < 160) pos += 8;
+            if (pos < 140) pos += 8;
         }
         // 안웃으면 내려가도록
         else {
